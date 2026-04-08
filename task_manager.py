@@ -1,3 +1,5 @@
+import json
+
 class Task:
 
     def __init__(self, id, description, completed=False):
@@ -11,15 +13,19 @@ class Task:
     
 class TaskManager:
 
+    FILENAME = "tasks.json"
+
     def __init__(self):
         self._tasks = []
         self._next_id = 1
+        self.load_tasks()
 
     def add_task(self, description):
         task = Task(self._next_id, description)
         self._tasks.append(task)
         self._next_id += 1
         print(f"Tarea añadida: {description}")
+        self.save_tasks()
     
     def list_tasks(self):
         if not self._tasks:
@@ -32,6 +38,7 @@ class TaskManager:
             if task.id == id:
                 task.completed = True
                 print(f"Tarea completada: {task.description}")
+                self.save_tasks()
                 return
         print(f"No se encontró la tarea con ID {id}.")
     
@@ -39,6 +46,33 @@ class TaskManager:
         for task in self._tasks:
             if task.id == id:
                 self._tasks.remove(task)
-                print(f"Tareacon id {task.id} eliminada - {task.description}")
+                print(f"Tarea con ID {task.id} eliminada - {task.description}")
+                self.save_tasks()
                 return
         print(f"No se encontró la tarea con ID {id}.")
+
+    def load_tasks(self):
+        try:
+            with open(self.FILENAME, "r") as f:
+                data = json.load(f)
+                self._tasks = [Task(**task) for task in data]
+                if(self._tasks):
+                    self._next_id = self._tasks[-1].id + 1
+                else:
+                    self._next_id = 1
+
+        except FileNotFoundError:
+            print(f"No se encontró el archivo {self.FILENAME}.")
+        except json.JSONDecodeError:
+            print(f"Error al leer el archivo {self.FILENAME}.")
+
+    def save_tasks(self):
+        data = {
+            "tasks": [vars(task) for task in self._tasks],
+            "next_id": self._next_id
+        }
+        try:
+            with open(self.FILENAME, "w") as file:
+                json.dump([{"id": task.id, "description": task.description, "completed": task.completed} for task in self._tasks], file, indent=4)
+        except IOError:
+            print(f"Error al guardar el archivo {self.FILENAME}.")

@@ -15,29 +15,34 @@ def main():
     while True:
         print_menu()
 
-        choice = input("Selecciona una opción: ")
+        try:
 
-        match choice:
-            case "1":
-                description = input("Descripción de la tarea: ")
-                task_manager.add_task(description)
+            choice = int(input("Selecciona una opción: "))
 
-            case "2": 
-                task_manager.list_tasks()
+            match choice:
+                case 1:
+                    description = input("Descripción de la tarea: ")
+                    task_manager.add_task(description)
 
-            case "3": 
-                id = int(input("ID de la tarea a completar: "))
-                task_manager.complete_task(id)
+                case 2: 
+                    task_manager.list_tasks()
 
-            case "4": 
-                id = int(input("ID de la tarea a eliminar: "))
-                task_manager.delete_task(id)
+                case 3: 
+                    id = int(input("ID de la tarea a completar: "))
+                    task_manager.complete_task(id)
 
-            case "5": 
-                print("Saliendo...")
-                break
-            case _: 
-                print("Opción no válida. Inténtalo de nuevo.")
+                case 4: 
+                    id = int(input("ID de la tarea a eliminar: "))
+                    task_manager.delete_task(id)
+
+                case 5: 
+                    print("Saliendo...")
+                    break
+                case _: 
+                    print("Opción no válida. Inténtalo de nuevo.")
+                    
+        except ValueError:
+            print("Entrada no válida. Por favor, ingresa un número.")
 
 if __name__ == "__main__":
     main()
